@@ -1,0 +1,126 @@
+---TABLESPACE
+CREATE  TABLESPACE mid_term DATAFILE 
+'C:\ITM_Oracle\BET_ITM\mid_term.dbf'  SIZE 20M;
+
+
+
+---PROFILE 
+
+
+CREATE PROFILE parcial LIMIT 
+   FAILED_LOGIN_ATTEMPTS 2 
+  IDLE_TIME 20;
+  
+  
+  
+  --- CREACION DE USUARIOS 
+  
+  DROP USER jramirez;
+  
+  CREATE USER jramirez IDENTIFIED BY 1234 DEFAULT TABLESPACE BET_ITM  QUOTA  10M ON BET_ITM PROFILE parcial;
+  
+  
+  
+ CREATE USER jramirez_sinespacio IDENTIFIED BY 1234 DEFAULT TABLESPACE BET_ITM  PROFILE parcial;
+  
+  
+  
+  ---CREACION ROLES 
+  
+  
+  CREATE ROLE MINI_DBA;
+  
+  
+  GRANT select,insert,update,delete ON tabla TO nuevo_rol;
+  
+  
+  
+  --- CREACION TABLAS 
+  
+  
+  CREATE TABLE ESTADOS_PRESTADORES (
+  ID NUMBER(22,00)  ,
+  NOMBRE varchar2(255) NOT NULL,
+  constraint FK_ESTADOS_PRESTADORES
+ primary key (ID)
+
+);
+
+CREATE TABLE MODALIDADES (
+  ID NUMBER(22,00),
+  NOMBRE varchar2(255) NOT NULL,
+  constraint FK_MODALIDADES
+ primary key(ID)
+);
+
+CREATE TABLE TIPO_COMUNAS (
+  ID NUMBER(22,00),
+  TIPO varchar2(255) NOT NULL,
+  constraint FK_TIPO_COMUNAS
+  primary key (ID)
+  
+);
+
+CREATE TABLE COMUNAS (
+  ID NUMBER(22,00),
+  NOMBRE varchar2(255) NOT NULL,
+  TIPO_COMUNA_ID NUMBER(22,00),
+  constraint FK_COMUNAS primary key (ID) ,
+ constraint FK_COMUNAS_TIPO_COMUNAS 
+   foreign key (TIPO_COMUNA_ID)
+   references TIPO_COMUNAS(ID) 
+);
+
+CREATE TABLE BARRIOS(
+  ID NUMBER(22,00),
+  NOMBRE varchar2(255) NOT NULL,
+  COMUNA_ID NUMBER(22,00),
+  constraint FK_BARRIOS primary key (ID),
+   constraint FK_COMUNAS_BARRIOS_COMUNAS
+   foreign key (COMUNA_ID )
+   references COMUNAS(ID) 
+);
+
+CREATE TABLE PRESTADORES(
+  ID NUMBER(22,00),
+  NOMBRE varchar2(255) NOT NULL,
+  FECHA_CONTRATACION DATE NOT NULL,
+  VALOR_CONTRATO float NOT NULL,
+  ESTADO_ID NUMBER(22,00)  ,
+  constraint FK_PRESTADORES primary key (ID),
+   constraint FK_PRESTADORES_ESTADOS_PRESTADORES
+   foreign key (ESTADO_ID)
+   references ESTADOS_PRESTADORES(ID) 
+);
+
+CREATE TABLE SEDES(
+  ID NUMBER(22,00),
+  SEDE varchar2(255) NOT NULL,
+  TELEFONO  varchar2(255) NOT NULL,
+  DIRECCION  varchar2(255) NOT NULL,
+  CUPOS_DISPUESTOS NUMBER(22,00) NOT NULL,
+  BARRIO_ID NUMBER(22,00) NOT NULL,
+  MODALIDAD_ID NUMBER(22,00) NOT NULL, 
+  PRESTADOR_ID NUMBER(22,00) NOT NULL,
+  constraint FK_SEDES primary key (ID),
+   
+    
+   constraint FK_SEDES_BARRIO
+   foreign key (BARRIO_ID)
+   references BARRIOS(ID) ,
+   
+   constraint FK_SEDES_MODALIDAD
+   foreign key (MODALIDAD_ID)
+   references MODALIDADES(ID) ,
+   
+   constraint FK_SEDES_PRESTADOR
+   foreign key (PRESTADOR_ID)
+   references PRESTADORES(ID) 
+   
+   
+   
+);
+
+  
+  
+  
